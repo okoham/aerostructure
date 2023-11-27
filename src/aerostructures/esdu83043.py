@@ -165,7 +165,7 @@ def compute_combined_load(quantity, phi, applied_loads, R, K, d=0):
 
 def compute_all(applied_loads, R, K, d=0, phi=np.linspace(-np.pi, np.pi, 361)):
     """Return a dataframe with all result quantities."""
-    totals = pd.DataFrame(phi, columns="phi_rad")
+    totals = pd.DataFrame(phi, columns=["phi_rad"])
     for q in QUANTITIES:
         totals[q] = compute_combined_load(q, phi, applied_loads, R, K, d) 
 
