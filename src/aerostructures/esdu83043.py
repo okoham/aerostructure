@@ -7,6 +7,17 @@ import pandas as pd
 import scipy.interpolate as spi
 
 
+"""
+Flexible circular frames supported by a shell. Moments, forces and displacements 
+due to concentrated loads and couples (Data item 83043)
+
+Flexible circular frames supporting a shell. The effect of adjacent frames and the 
+longitudinal flexibility of the shell (data item 03.06.17)
+
+
+"""
+
+
 # Read coefficients CMM, CMT, ... from table xxx
 
 # ESDU data contain some errors:
@@ -59,7 +70,7 @@ def coefficients(theta, d, curve_id):
 
     Parameters:
     theta    ... angle (in radians) between applied load and section of interest.
-    d        ... stiffness parameter
+    d        ... effective frame to shell stiffness parameter
     curve_id ... one of CMM, CMT, ..."""
 
     # the interpolation requires arrays with monotonically inceasing values. 
@@ -102,15 +113,17 @@ def compute_single_load(quantity, phi, alpha, Ma, Ta, Na, R, K, d=0):
               In many cases, if forces/deformations for the complete frame is desired, 
               provide a complete array from 0 to 2pi, like np.linspace(-np.pi, np.pi, num=181)
     alpha ... angle where load is applied (in radians, from 12h position, +ve CW). 
-    Ma    ... applied moment at position alpha (float). Positive moment creates tension in 
+    Ma    ... applied moment at position alpha (Nm, float). Positive moment creates tension in 
               inner flange.
-    Ta    ... applied tangential force at position alpha (float). Positive force tends to 
+    Ta    ... applied tangential force at position alpha (N, float). Positive force tends to 
               rotate frame CCW.
-    Na    ... applied radial force at position alpha (float). Positive force outward.
-    R     ... radius of frame (float)
-    K     ... stiffness parameter (float)
-    d     ... stiffness parameter (float). d=0 corresponds to a rigid frame, resulting in a 
-              sine shaped skin shear flow distribution.
+    Na    ... applied radial force at position alpha (N, float). Positive force outward.
+    R     ... radius of frame (m, float)
+    K     ... shell skin resisting force per unit tangential deflection (N/m, float).
+              K = G t R / L'
+    d     ... effective frame to shell stiffness parameter (float). 
+              d = G t R^4 / (E I L') 
+              d = 0 corresponds to a rigid frame, resulting in a sine shaped skin shear flow distribution.
     """
 
     assert quantity in QUANTITIES
