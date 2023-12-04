@@ -197,7 +197,10 @@ def plot_loads(totals):
     # TODO: make this customisable and a bit nicer.
     # TODO: what's load the reference point (on the section) for applied and section loads? Section centroid? Or OML? 
     
-    phi_rad = totals["phi_rad"]
+    try:
+        phi_rad = totals["phi_rad"]
+    except KeyError:
+        phi_rad = totals.index
     phi_deg = np.degrees(phi_rad)
     
     plot_data = [
