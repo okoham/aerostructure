@@ -178,7 +178,10 @@ def compute_combined_load(quantity, phi, applied_loads, R, K, d=0):
 
 def compute_all(applied_loads, R, K, d=0, phi=np.linspace(-np.pi, np.pi, 361)):
     """Return a dataframe with all result quantities."""
-    totals = pd.DataFrame(phi, columns=["phi_rad"])
+
+    totals = pd.DataFrame(0, index=pd.Index(phi, name="phi_rad"), 
+                          columns=['M', 'T', 'N', 'δ', 'ψ', 'η', 'Q'])
+    # totals = pd.DataFrame(phi, columns=["phi_rad"])
     for q in QUANTITIES:
         totals[q] = compute_combined_load(q, phi, applied_loads, R, K, d) 
 
@@ -197,10 +200,10 @@ def plot_loads(totals):
     # TODO: make this customisable and a bit nicer.
     # TODO: what's load the reference point (on the section) for applied and section loads? Section centroid? Or OML? 
     
-    try:
-        phi_rad = totals["phi_rad"]
-    except KeyError:
-        phi_rad = totals.index
+    #try:
+    #    phi_rad = totals["phi_rad"]
+    #except KeyError:
+    phi_rad = totals.index
     phi_deg = np.degrees(phi_rad)
     
     plot_data = [

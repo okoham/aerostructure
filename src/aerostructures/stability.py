@@ -47,7 +47,7 @@ def weff_bruhn(thickness, ec, fst, condition):
 def weff_simple(thickness):
     """20 t, on either side of rivet. 
     For aluminium, this can be derived from the Bruhn formula
-    2 weff = 1.92 t \sqrt(Ec/Fcc), with E=70000 and Fcc =350 (assumung Fcc approx. Fcy ) 
+    2 weff = 1.92 t \sqrt(Ec/Fcc), with E=70000 and Fcc=350 (assumung Fcc approx. Fcy ) 
     """
     return 20*thickness
 
