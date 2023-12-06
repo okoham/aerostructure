@@ -14,7 +14,6 @@ due to concentrated loads and couples (Data item 83043)
 Flexible circular frames supporting a shell. The effect of adjacent frames and the 
 longitudinal flexibility of the shell (data item 03.06.17)
 
-
 """
 
 
