@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from .stability import weff_simple, sigma_irb_hsb, strength_flange_buckling, Plate_SS_Ti
+from stability import weff_simple, sigma_irb_hsb, strength_flange_buckling, Plate_SS_Ti
 
 
 class FrameI(object):
@@ -64,6 +64,11 @@ class FrameI(object):
 
         # all this is generic; can share this with other classes
 
+        # TODO: compute different cross section properties
+        # 1. gross section (for mass, ...)
+        # 2. net section with skin fully effective: strength analysis, skin in tension
+        # 3. net section with reduced effective skin (strength in compression) 
+
         # EA, centroid
         df['zo1'] = (self.df["zo0"] + self.df["zo2"])/2
         df["A"] = self.df.w * self.df.h
@@ -74,7 +79,7 @@ class FrameI(object):
 
         
         self.zcg = (self.df.zo1 * self.df.EA).sum() / self.EA
-        print(f"zo_cg = {self.zcg:.1f}")
+        # print(f"zo_cg = {self.zcg:.1f}")
 
         self.df["zs0"] = self.df.zo0 - self.zcg
         self.df["zs1"] = self.df.zo1 - self.zcg
@@ -84,12 +89,12 @@ class FrameI(object):
         df['eio'] = eio = df.et * (df.w * df.h**3/12 + df.zo1**2 * df.A)
         self.EI = eio.sum() - self.EA * self.zcg**2
         
-        print(f"A = {df.A.sum():.1f}")
-        print(f"EA = {self.EA:.1f}")
-        print(f"EI = {self.EI:.1f}")
+        # print(f"A = {df.A.sum():.1f}")
+        # print(f"EA = {self.EA:.1f}")
+        # print(f"EI = {self.EI:.1f}")
 
         # a dataframe for stresses
-        # TODO: maybe an explicit python loop is easier to understand than this pandas stuff
+        # TODO: maybe an explicit python loop is easier to understand than this pandas stuff???
         cols = ['element', 'et', 'eid', 'zs0', 'zs1', 'zs2']
         self.dfs = df[cols].melt(id_vars=["eid", "element", "et"], value_name="zs", var_name="pos").sort_values(["zs", 'eid']).reset_index(drop=True)
         self.dfs['zo'] = self.dfs['zs'] + self.zcg
@@ -104,8 +109,8 @@ class FrameI(object):
         return ea_frame / self.EA
 
 
-    def mass(self):
-        # mass per unit length
+    def mass_total(self):
+        # mass per unit length, including skin and doubler
         mass = 0
         for i, row in self.df.iterrows():
             elem = row.element
@@ -113,6 +118,16 @@ class FrameI(object):
         return mass
 
     
+    def mass_frame(self):
+        # mass per unit length of frame alone, without skin/doubler
+        mass = 0
+        for i, row in self.df.iterrows():
+            elem = row.element
+            if elem in ('ff', 'wb', 'af'):
+                mass += self.materials[elem]['rho'] * row.A
+        return mass
+
+
     def stresses(self, Fx, Fz, My, lcase=''):
         df = self.dfs.copy()
         et = df.et
@@ -158,7 +173,7 @@ class FrameI(object):
             stresses_c = section.stresses(T, N, M)
             stresses = stresses_c
         else: 
-            res['weff'] = self.spec['t_sk']
+            res['weff'] = self.spec['w_sk']
             res['sk_compression'] = False
             section = self
             stresses = stresses_t
@@ -166,15 +181,14 @@ class FrameI(object):
         # TODO: add stresses to result
 
         # skin plain tension/compression
-        # TODO: Abzug für niete
         mat_sk = self.materials['sk']
         t_sk = self.spec['t_sk']
         sigma_sk = stresses_t.query("element == 'sk' & pos == 'zs1'")['sx'].values[0]
-        anet_agross = 1
+        #anet_agross = 1
         res['sigma_sk'] = sigma_sk
-        res["R_sk_pt"] = R_sk_pt = strength_pt(mat_sk['ftu'], reduction_factor=anet_agross)
+        res["R_sk_pt"] = R_sk_pt = strength_pt(mat_sk['ftu'])
         res["R_sk_pc"] = R_sk_pc = strength_pc(mat_sk['fcy'])
-        # TODO: use actual fastener pizch and fixity
+        # TODO: use actual fastener pitch and fixity
         res["R_sk_irb"] = R_sk_irb = sigma_irb_hsb(25, t_sk, mat_sk['ec'], mat_sk['fcy'], C=2.0)
         if sigma_sk > 0:
             res["rf_sk_pt"] = R_sk_pt / sigma_sk
@@ -189,9 +203,9 @@ class FrameI(object):
         mat_do = self.materials['do']
         t_do = self.spec['t_do']
         # TODO: Abzug für niete
-        anet_agross = 0.9
+        # anet_agross = 0.9
         res['sigma_do'] = sigma_do = stresses_t.query("element == 'do' & pos == 'zs1'")['sx'].values[0]
-        res["R_do_pt"] = R_do_pt = strength_pt(mat_do['ftu'], reduction_factor=anet_agross)
+        res["R_do_pt"] = R_do_pt = strength_pt(mat_do['ftu'])
         res["R_do_pc"] = R_do_pc = strength_pc(mat_do['fcy'])
         if sigma_do > 0:
             res["rf_do_pt"] = R_do_pt / sigma_do
@@ -207,7 +221,7 @@ class FrameI(object):
         t_wb = self.spec['t_wb']
         res['sigma_af'] = sigma_af = stresses_t.query("element == 'af' & pos == 'zs1'")['sx'].values[0]
         # TODO: reduction factor
-        res["R_af_pt"] = R_af_pt = strength_pt(mat_fr['ftu'], reduction_factor=0.8)
+        res["R_af_pt"] = R_af_pt = strength_pt(mat_fr['ftu'])
         res["R_af_pc"] = R_af_pc = strength_pc(mat_fr['fcy'])
         res["R_af_lb"] = R_af_lb = strength_flange_buckling(mat_fr['ec'], t_af, (w_af - t_wb)/2)
         res["R_af_crp"] = R_af_crp = strength_crippling(mat_fr['fcy'], R_af_lb)
@@ -265,7 +279,7 @@ class FrameI(object):
         # TODO: reduction factor
         for _, row in stresses.query("element == 'wb'").iterrows():
             res[f'sig_wb_vm_{row.pos}'] = sig_vm = sigma_vm(row.sx, 0, row.tau)
-            res[f'rf_wb_vm_{row.pos}'] = strength_pt(mat_fr['ftu'], reduction_factor=0.8) / sig_vm
+            res[f'rf_wb_vm_{row.pos}'] = strength_pt(mat_fr['ftu']) / sig_vm
 
         # TODO: lateral stability
 

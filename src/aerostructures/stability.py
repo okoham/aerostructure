@@ -41,7 +41,7 @@ def weff_bruhn(thickness, ec, fst, condition):
     Parameters: 
 
     """
-    pass
+    return np.nan
 
 
 def weff_simple(thickness):
@@ -148,9 +148,13 @@ class Plate_SS_Ti(object):
             return np.inf
 
         # TODO: find a good bracket. 
-        res = spo.root_scalar(Plate_SS_Ti._residual, method='bisect', x0=0, bracket=[0, 1000],
-                       args=(sc, sb, tau, self.sigc_cr_0, self.sigb_cr_0, self.tau_cr_0))
-        
-        if debug: 
-            print(res)
-        return res.root
+        try: 
+            res = spo.root_scalar(Plate_SS_Ti._residual, method='bisect', x0=0, bracket=[0, 1000],
+                        args=(sc, sb, tau, self.sigc_cr_0, self.sigb_cr_0, self.tau_cr_0))
+            rf = res.root        
+            if debug: 
+                print(res)
+        except ValueError:
+            rf = np.nan
+
+        return rf
