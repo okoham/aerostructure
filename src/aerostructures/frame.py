@@ -154,9 +154,8 @@ class FrameI(object):
         """
 
         res = {}
-        # res.update(self.spec)
-
-        res['unit_mass'] = self.mass()
+        res['unit_mass_total'] = self.mass_total()
+        res['unit_mass_frame'] = self.mass_frame()
 
         stresses_t = self.stresses(T, N, M)
 
