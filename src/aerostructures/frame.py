@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from stability import weff_simple, sigma_irb_hsb, strength_flange_buckling, Plate_SS_Ti
+from .stability import weff_simple, sigma_irb_hsb, strength_flange_buckling, Plate_SS_Ti
 
 
 class FrameI(object):
