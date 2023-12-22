@@ -1,0 +1,73 @@
+[al7050]
+name = "al7050"
+et = 71000
+ec = 73000
+nu = 0.33
+rho = 2.82e-06
+A = 0.1
+ftu = 525
+fty = 455
+fcy = 440
+fsu = 305
+fbru20 = 1005
+fbru15 = 770
+fbry20 = 735
+fbry15 = 635
+basis = "B"
+direction = "L"
+tmin = 30
+tmax = 50
+source = "HSB 12512-73 C/2007 page 1, Table1, B values, thickness 30 - 50, L direction"
+description = """7050 T7451, unclad plate, standard quality (material according to EN3982 
+and AIMS 03-02-022). A and B values in agreement with MMPDS-03"""
+
+[al2024]
+name = "al2024"
+et = 72400
+et_secondary = 69000
+ec = 73800
+ec_secondary = 70300
+nu = 0.33
+rho = 2.8e-06
+A = 0.15
+ftu = 430
+fty = 290
+fcy = 310
+fsu = 270
+fbru20 = 875
+fbru15 = 705
+fbry20 = 605
+fbry15 = 505
+basis = "B"
+direction = "LT"
+tmin = 1.6
+tmax = 3.2
+source = "HSB 12512-20 C/2006 page 1, B values, thickness 1.6 - 3.2, LT direction"
+description =  """2024-T3/351, clad sheet/plate (material according to AIMS 03-04-011/13 special surface 
+quality and AIMS 03-04-009/014 standard surface quality, only A- and B-values of Rm and 
+Rp0.2 are in agreement with MMPDS-02)"""
+
+# FIXME_ nu is assumed.
+[ti64]
+name = "ti64"
+et = 110300
+ec = 113100
+nu = 0.33
+rho = 4.43e-09
+A = 0.08
+ftu = 930
+fty = 860
+fcy = 890
+fsu = 580
+fbru20 = 1905
+fbru15 = 1475
+fbry20 = 1460
+fbry15 = 1235
+basis = "B"
+direction = "L"
+tmin = 6
+tmax = 10
+source = "HSB 12571-03, D/2009, page 1, alpha-beta-annealed, t = 6...10, B values, L direction"
+description = """Ti6Al4V, a-ß-annealed, sheet/plate (Material according to AIMS 03-18-004 and 
+AIMS 03-18-001/006, A- and B-value are in accordance with MMPDS-04, AMS 4911)"""
+
