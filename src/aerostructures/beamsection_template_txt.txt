@@ -1,0 +1,76 @@
+{# template for jinja2.
+   requires:
+   - section
+#}
+Simple Section Bending Analysis
+===============================
+
+Title: {{ section.title }}
+--------------------------
+	
+User: tbd
+Date: tbd
+Version: tbd
+Machine/OS: tbd
+
+	
+Input Data
+----------
+
+vert       y0       z0
+{% for v in section.vertices -%}
+{{ "%4i %8.2f %8.2f"|format(loop.index0, v[0], v[1]) }} 
+{% endfor %}
+
+
+Reference System
+----------------
+
+Area: 
+  A = {{ section.area }}
+  
+Centroid: 
+  y0n = {{ section.y0n }}
+  z0n = {{ section.z0n }}
+  
+Inertia:
+  iy0  = {{ section.iy0 }}
+  iz0  = {{ section.iz0 }}
+  iyz0 = {{ section.iyz0 }}
+	
+	
+Centroid System
+---------------
+
+vert        y        z
+{% for v in section.vertex_coords_centroid() -%}
+{{ "%4i %8.2f %8.2f"|format(loop.index0, v[0], v[1]) }} 
+{% endfor %}
+
+Inertia:
+  iy  = {{ section.iy }}
+  iz  = {{ section.iz }}
+  iyz = {{ section.iyz }}
+
+
+	
+Principal Axes System
+---------------------------------
+
+vert     ybar     zbar
+{% for v in section.vertex_coords_principal() -%}
+{{ "%4i %8.2f %8.2f"|format(loop.index0, v[0], v[1]) }} 
+{% endfor %}
+
+Principle axes:
+  phi1 = {{ section.phi1 }}
+  phi2 = {{ section.phi2 }}
+  
+Interia: 
+  I1 = {{ section.i1 }}
+  I2 = {{ section.i2 }}
+  
+Radii of gyration:
+  r1 = {{ section.r1 }}
+  r2 = {{ section.r2 }}
+

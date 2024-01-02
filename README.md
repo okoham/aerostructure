@@ -12,3 +12,4 @@ A collection of tools useful for aircraft structural analysis.
   subjected to compression, bending and shear. 
 
 Materials database: `materials_static.toml`
+

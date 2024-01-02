@@ -1,0 +1,76 @@
+{# template for jinja2.
+   requires:
+   - section (Section object)
+   - picture (base64 encoded jpeg)
+#}
+<html>
+<head>
+	<title>Simple Section Bending Analysis</title>
+</head>
+<body>
+	<h1>Simple Section Bending Analysis</h1>
+	<h2>Title: {{ section.title }}</h2>
+	
+	<ul>
+		<li>User: tbd</li>
+		<li>Date: tbd</li>
+		<li>Version: tbd</li>
+		<li>Machine/OS: tbd</li>
+	</ul>
+	
+	<h2>Input Data</h2>
+	<p>vertex coordinates</p>
+
+	<table>
+		<tr><th>id</th><th>y0</th><th>z0</th></tr>
+		{% for v in section.vertices %}
+		<tr><td>{{ loop.index0 }}</td><td>{{ v[0] }}</td><td>{{ v[1] }}</td></tr>
+		{% endfor %}
+	</table>
+	
+
+	<h2>Reference System</h2>
+	<!-- vertex coordinates -->
+	<p>properties</p>
+	<ul>
+		<li>Area: {{ section.area }}</li>
+		<li>Centroid y0n, z0n: {{ section.y0n }}, {{ section.z0n }}</li>
+		<li>Inertia iy0, iz0, iyz0: {{ section.iy0 }}, {{ section.iz0 }}, {{ section.iyz0 }}</li>
+	</ul>
+	
+	<h2>Centroid System</h2>
+	<p>vertex coordinates</p>
+	<table>
+		<tr><th>id</th><th>y0</th><th>z0</th></tr>
+		{% for v in section.vertex_coords_centroid() %}
+		<tr><td>{{ loop.index0 }}</td><td>{{ v[0] }}</td><td>{{ v[1] }}</td></tr>
+		{% endfor %}
+	</table>
+	<p>properties</p>
+	<ul>
+		<li>Inertia iy, iz, iyz: {{ section.iy }}, {{ section.iz }}, {{ section.iyz }}</li>
+	</ul>
+	
+	
+	<h2>Principal Axes System</h2>
+	<p>vertex coordinates</p>
+	<table>
+		<tr><th>id</th><th>ybar</th><th>zbar</th></tr>
+		{% for v in section.vertex_coords_principal() %}
+		<tr><td>{{ loop.index0 }}</td><td>{{ v[0] }}</td><td>{{ v[1] }}</td></tr>
+		{% endfor %}
+	</table>
+	<p>properties</p>
+	<ul>
+		<li>Inertia i1, i2: {{ section.i1 }}, {{ section.i2 }}</li>
+		<li>Radii of gyration r1, r2: {{ section.r1 }}, {{ section.r2 }}</li>
+		<li>Angles phi1, phi2: {{ section.phi1 }}, {{ section.phi2 }}</li>
+	</ul>
+	
+	<h2>Sketch</h2>
+	
+	<img src="data:image/png;base64,{{ picture }}" alt="section plot"/>
+
+
+</body>
+</html>
