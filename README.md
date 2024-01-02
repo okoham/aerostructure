@@ -10,6 +10,7 @@ A collection of tools useful for aircraft structural analysis.
   Inter-rivet buckling, effective width of compressed skin, local 
   buckling of flanges, elastic buckling of a simply supported plate
   subjected to compression, bending and shear. 
+- Module `beamsection`: analysis of polygonal section in bending
 
 Materials database: `materials_static.toml`
 
